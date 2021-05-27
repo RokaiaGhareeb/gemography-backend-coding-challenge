@@ -1,17 +1,18 @@
-const { response } = require("express");
 const fetch = require("node-fetch");
+const moment = require("moment");
 
-
-const fetchData = fetch("https://api.github.com/search/repositories?q=created:%3E2021-04-26&sort=stars&order=desc&per_page=100")
-                    .then((response) => response.json())
-                    .then((data) => {
-                        const filtered_list = withOutNulls(data["items"]);
-                        const language_list = filterLanguages(filtered_list);
-                        const repo_list = filterRepos(filtered_list, language_list);
-                        return repo_list;
-                    })
-                    .catch((err) => console.log(err));
-
+const fetchData = () =>{
+   const date = moment().subtract(30,'days').format('YYYY-MM-DD').toString();
+    fetch(`https://api.github.com/search/repositories?q=created:%3E${date}&sort=stars&order=desc&per_page=100`)
+    .then((response) => response.json())
+    .then((data) => {
+        const filtered_list = withOutNulls(data["items"]);
+        const language_list = filterLanguages(filtered_list);
+        const repo_list = filterRepos(filtered_list, language_list);
+        return repo_list;
+    })
+    .catch((err) => console.log(err));
+}
 
 function withOutNulls(response_list){
     let new_list = [];
